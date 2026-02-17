@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
 import { CardContainer, Card } from "../UI/Card.jsx";
 import "./Students.scss";
 
@@ -161,8 +161,22 @@ function Students() {
     UserYearName: "2022-23",
   };
 
+  const myGroupID = 13;
+  const apiURL = "https://softwarehub.uk/unibase/api";
+  const myGroupEndpoint = `${apiURL}/users/groups/${myGroupID}`;
+
   // State
-  const [students, setStudents] = useState(studentlist);
+  const [students, setStudents] = useState(null);
+
+  const apiGet = async (endpoint) => {
+    const response = await fetch(endpoint);
+    const results = await response.json();
+    setStudents(results);
+  };
+
+  useEffect(() => {
+    apiGet(myGroupEndpoint);
+  }, [myGroupEndpoint]);
 
   // Handlers
   const handleAdd = (student) => {
@@ -176,20 +190,26 @@ function Students() {
   return (
     <>
       <h1>Students</h1>
-      <CardContainer>
-        {students.map((student) => {
-          return (
-            <div className="studentCard" key={student.UserID}>
-              <Card>
-                <p>{student.UserEmail.substring(0, 8)}</p>
-                <p>{`${student.UserFirstname} ${student.UserLastname}`}</p>
-                <img src={student.UserImageURL} />
-              </Card>
-            </div>
-          );
-        })}
-      </CardContainer>
-      <button onClick={() => handleAdd(newStudent)}>Add Student</button>
+      {!students ? (
+        <p>Loading Records...</p>
+      ) : (
+        <>
+          <CardContainer>
+            {students.map((student) => {
+              return (
+                <div className="studentCard" key={student.UserID}>
+                  <Card>
+                    <p>{student.UserEmail.substring(0, 8)}</p>
+                    <p>{`${student.UserFirstname} ${student.UserLastname}`}</p>
+                    <img src={student.UserImageURL} />
+                  </Card>
+                </div>
+              );
+            })}
+          </CardContainer>
+          <button onClick={() => handleAdd(newStudent)}>Add Student</button>
+        </>
+      )}
     </>
   );
 }

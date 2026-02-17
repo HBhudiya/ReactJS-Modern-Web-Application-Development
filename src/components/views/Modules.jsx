@@ -8,7 +8,8 @@ import ModuleCard from "../entity/module/ModuleCard.jsx";
 const Modules = () => {
   // Initialisation
   const apiURL = "https://softwarehub.uk/unibase/api";
-  const myGroupEndpoint = `${apiURL}/modules`;
+  const modulesEndpoint = `${apiURL}/modules`;
+  const postModuleEndpoint = `${apiURL}/modules`;
 
   // State
   const [modules, setModules] = useState(null);
@@ -21,8 +22,27 @@ const Modules = () => {
   };
 
   useEffect(() => {
-    apiGet(myGroupEndpoint);
-  }, [myGroupEndpoint]);
+    apiGet(modulesEndpoint);
+  }, [modulesEndpoint]);
+
+  const apiPOST = async (endpoint, record) => {
+    // Build a request object
+    const request = {
+      method: "POST",
+      body: JSON.stringify(record),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    // Call the fetch
+    const response = await fetch(endpoint, request);
+    const result = await response.json();
+
+    return response.status >= 200 && response.status < 300
+      ? { isSuccess: true }
+      : { isSuccess: false, message: result.message };
+  };
 
   // Handlers
   const handleAdd = () => {
@@ -31,6 +51,14 @@ const Modules = () => {
 
   const handleCancel = () => {
     setShowForm(false);
+  };
+
+  const handleSubmit = async (module) => {
+    const result = await apiPOST(postModuleEndpoint, module);
+    if (result.isSuccess) {
+      setShowForm(false);
+      apiGet(modulesEndpoint);
+    } else alert(`Submission Unsuccessful: ${result.message}`);
   };
 
   // View
@@ -48,7 +76,7 @@ const Modules = () => {
             />
           </Action.Tray>
         ) : (
-          <ModuleForm onCancel={handleCancel} />
+          <ModuleForm onSubmit={handleSubmit} onCancel={handleCancel} />
         )}
 
         {!modules ? (

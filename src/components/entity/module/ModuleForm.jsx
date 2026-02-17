@@ -9,10 +9,11 @@ const initialModule = {
   ModuleLevel: null,
   ModuleYearID: null,
   ModuleLeaderID: null,
-  ModuleImageURL: "https://example.com/module-image.jpg",
+  ModuleImageURL:
+    "https://images.freeimages.com/images/small-previews/9b8/electronic-components-2-1242738.jpg",
 };
 
-const ModuleForm = ({ onCancel }) => {
+const ModuleForm = ({ onSubmit, onCancel }) => {
   // Initialisation
   const conformance = {
     js2html: {
@@ -63,7 +64,7 @@ const ModuleForm = ({ onCancel }) => {
     setModule({ ...module, [name]: conformance.html2js[name](value) });
   };
 
-  const handleSubmit = () => alert(JSON.stringify(module));
+  const handleSubmit = () => onSubmit(module);
 
   // View
   return (

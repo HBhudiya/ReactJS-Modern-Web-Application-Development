@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Spacer from "../../UI/Spacer.jsx";
 import Action from "../../UI/Actions.jsx";
 import "./ModuleForm.scss";
-import { Value } from "sass";
 
 const initialModule = {
   ModuleName: null,
@@ -35,8 +34,28 @@ const ModuleForm = ({ onCancel }) => {
     },
   };
 
+  const apiURL = "https://softwarehub.uk/unibase/api";
+  const yearsEndpoint = `${apiURL}/years`;
+  const staffEndpoint = `${apiURL}/users/staff`;
+
   // State
   const [module, setModule] = useState(initialModule);
+  const [years, setYears] = useState(null);
+  const [staff, setStaff] = useState(null);
+
+  const apiGet = async (endpoint, setState) => {
+    const response = await fetch(endpoint);
+    const result = await response.json();
+    setState(result);
+  };
+
+  useEffect(() => {
+    apiGet(yearsEndpoint, setYears);
+  }, [yearsEndpoint]);
+
+  useEffect(() => {
+    apiGet(staffEndpoint, setStaff);
+  }, [staffEndpoint]);
 
   // Handlers
   const handleChange = (event) => {
@@ -79,7 +98,7 @@ const ModuleForm = ({ onCancel }) => {
               onChange={handleChange}
             >
               <option value="0" hidden>
-                No level selected
+                No level Selected
               </option>
               {[3, 4, 5, 6, 7].map((level) => (
                 <option key={level}>{level}</option>
@@ -89,22 +108,48 @@ const ModuleForm = ({ onCancel }) => {
 
           <label>
             Module Year
-            <input
-              type="text"
-              name="ModuleYearID"
-              value={conformance.js2html.ModuleYearID(module.ModuleYearID)}
-              onChange={handleChange}
-            />
+            {!years ? (
+              <p>Loading Records...</p>
+            ) : (
+              <select
+                name="ModuleYearID"
+                value={conformance.js2html.ModuleYearID(module.ModuleYearID)}
+                onChange={handleChange}
+              >
+                <option value="0" hidden>
+                  No Year Selected
+                </option>
+                {years.map((year) => (
+                  <option key={year.YearID} value={year.YearID}>
+                    {year.YearName}
+                  </option>
+                ))}
+              </select>
+            )}
           </label>
 
           <label>
             Module Leader
-            <input
-              type="text"
-              name="ModuleLeaderID"
-              value={conformance.js2html.ModuleLeaderID(module.ModuleLeaderID)}
-              onChange={handleChange}
-            />
+            {!staff ? (
+              <p>Loading Records...</p>
+            ) : (
+              <select
+                name="ModuleLeaderID"
+                value={conformance.js2html.ModuleLeaderID(
+                  module.ModuleLeaderID,
+                )}
+                onChange={handleChange}
+              >
+                <option value="0" hidden>
+                  No User Selected
+                </option>
+                {staff.map((user) => (
+                  <option key={user.UserID} value={user.UserID}>
+                    {`${user.UserFirstname} ${user.UserLastname}`}
+                  </option>
+                ))}
+              </select>
+            )}
           </label>
 
           <label>

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { CardContainer, Card } from "../UI/Card.jsx";
-import "./Modules.scss";
+import { CardContainer } from "../UI/Card.jsx";
+import ModuleCard from "../entity/module/ModuleCard.jsx";
 
 const Modules = () => {
+  // Initialisation
   const apiURL = "https://softwarehub.uk/unibase/api";
   const myGroupEndpoint = `${apiURL}/modules`;
 
@@ -19,6 +20,8 @@ const Modules = () => {
     apiGet(myGroupEndpoint);
   }, [myGroupEndpoint]);
 
+  // Handlers
+  // View
   return (
     <>
       <h1>Modules</h1>
@@ -26,17 +29,9 @@ const Modules = () => {
         <p>Loading Records...</p>
       ) : (
         <CardContainer>
-          {modules.map((module) => {
-            return (
-              <div className="moduleCard" key={module.ModuleID}>
-                <Card>
-                  <p>{module.ModuleCode}</p>
-                  <p>{module.ModuleName}</p>
-                  <img src={module.ModuleImageURL} alt={module.ModuleName} />
-                </Card>
-              </div>
-            );
-          })}
+          {modules.map((module) => (
+            <ModuleCard key={module.ModuleID} module={module} />
+          ))}
         </CardContainer>
       )}
     </>

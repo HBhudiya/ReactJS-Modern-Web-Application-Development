@@ -1,6 +1,6 @@
 import { useState, useEffect, use } from "react";
-import { CardContainer, Card } from "../UI/Card.jsx";
-import "./Students.scss";
+import { CardContainer } from "../UI/Card.jsx";
+import UserCard from "../entity/user/UserCard.jsx";
 
 const studentlist = [
   {
@@ -196,15 +196,7 @@ function Students() {
         <>
           <CardContainer>
             {students.map((student) => {
-              return (
-                <div className="studentCard" key={student.UserID}>
-                  <Card>
-                    <p>{student.UserEmail.substring(0, 8)}</p>
-                    <p>{`${student.UserFirstname} ${student.UserLastname}`}</p>
-                    <img src={student.UserImageURL} />
-                  </Card>
-                </div>
-              );
+              return <UserCard key={student.UserID} user={student} />;
             })}
           </CardContainer>
           <button onClick={() => handleAdd(newStudent)}>Add Student</button>

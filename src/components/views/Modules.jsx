@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
 import useLoad from "../api/useLoad.js";
 import apiURL from "../api/apiURL.js";
 import API from "../api/API.js";
+import { Modal, useModal } from "../UI/Modal.jsx";
 import Spacer from "../UI/Spacer.jsx";
 import Action from "../UI/Actions.jsx";
 import ModuleForm from "../entity/module/ModuleForm.jsx";
@@ -14,22 +14,14 @@ const Modules = () => {
   const postModuleEndpoint = `${apiURL}/modules`;
 
   // State
-  const [showForm, setShowForm] = useState(false);
   const [modules, loadingMessage, loadModules] = useLoad(modulesEndpoint);
+  const [isFormOpen, openForm, closeForm] = useModal(false);
 
   // Handlers
-  const handleAdd = () => {
-    setShowForm(true);
-  };
-
-  const handleCancel = () => {
-    setShowForm(false);
-  };
-
   const handleSubmit = async (module) => {
     const result = await API.post(postModuleEndpoint, module);
     if (result.isSuccess) {
-      setShowForm(false);
+      closeForm();
       loadModules(modulesEndpoint);
     } else alert(`Submission Unsuccessful: ${result.message}`);
   };
@@ -39,18 +31,16 @@ const Modules = () => {
     <>
       <h1>Modules</h1>
 
+      {isFormOpen && (
+        <Modal title="Add New Module">
+          <ModuleForm onSubmit={handleSubmit} onCancel={closeForm} />
+        </Modal>
+      )}
+
       <Spacer>
-        {!showForm ? (
-          <Action.Tray>
-            <Action.Add
-              showText
-              buttonText="Add New Module"
-              onClick={handleAdd}
-            />
-          </Action.Tray>
-        ) : (
-          <ModuleForm onSubmit={handleSubmit} onCancel={handleCancel} />
-        )}
+        <Action.Tray>
+          <Action.Add showText buttonText="Add New Module" onClick={openForm} />
+        </Action.Tray>
 
         {!modules ? (
           <p>{loadingMessage}</p>

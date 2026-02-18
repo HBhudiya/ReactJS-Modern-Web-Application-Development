@@ -2,6 +2,7 @@ import useLoad from "../api/useLoad.js";
 import apiURL from "../api/apiURL.js";
 import API from "../api/API.js";
 import { Modal, useModal } from "../UI/Modal.jsx";
+import { Alert, Error, useAlert } from "../UI/Alert.jsx";
 import Spacer from "../UI/Spacer.jsx";
 import Action from "../UI/Actions.jsx";
 import ModuleForm from "../entity/module/ModuleForm.jsx";
@@ -16,6 +17,8 @@ const Modules = () => {
   // State
   const [modules, loadingMessage, loadModules] = useLoad(modulesEndpoint);
   const [isFormOpen, openForm, closeForm] = useModal(false);
+  const [isAlertOpen, alertMessage, openAlert, closeAlert] = useAlert();
+  const [isErrorOpen, errorMessage, openError, closeError] = useAlert();
 
   // Handlers
   const handleSubmit = async (module) => {
@@ -23,7 +26,8 @@ const Modules = () => {
     if (result.isSuccess) {
       closeForm();
       loadModules(modulesEndpoint);
-    } else alert(`Submission Unsuccessful: ${result.message}`);
+      openAlert("Submission Successful");
+    } else openError(`Submission Unsuccessful: ${result.message}`);
   };
 
   // View
@@ -36,6 +40,9 @@ const Modules = () => {
           <ModuleForm onSubmit={handleSubmit} onCancel={closeForm} />
         </Modal>
       )}
+
+      {isAlertOpen && <Alert message={alertMessage} onDismiss={closeAlert} />}
+      {isErrorOpen && <Error message={errorMessage} onDismiss={closeError} />}
 
       <Spacer>
         <Action.Tray>

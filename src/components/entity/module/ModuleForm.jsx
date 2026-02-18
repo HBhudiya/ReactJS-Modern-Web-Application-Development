@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useLoad from "../../api/useLoad.js";
 import apiURL from "../../api/apiURL.js";
-import API from "../../api/API.js";
+import { Confirm, useAlert } from "../../UI/Alert.jsx";
 import Spacer from "../../UI/Spacer.jsx";
 import Action from "../../UI/Actions.jsx";
 import "./ModuleForm.scss";
@@ -45,6 +45,7 @@ const ModuleForm = ({ onSubmit, onCancel }) => {
   const [module, setModule] = useState(initialModule);
   const [years, loadingYearsMessage] = useLoad(yearsEndpoint);
   const [staff, loadingStaffMessage] = useLoad(staffEndpoint);
+  const [isConfirmOpen, confirmMessage, openConfirm, closeConfirm] = useAlert();
 
   // Handlers
   const handleChange = (event) => {
@@ -57,6 +58,14 @@ const ModuleForm = ({ onSubmit, onCancel }) => {
   // View
   return (
     <div className="moduleForm">
+      {isConfirmOpen && (
+        <Confirm
+          message={confirmMessage}
+          onDismiss={closeConfirm}
+          onConfirm={handleSubmit}
+        />
+      )}
+
       <Spacer>
         <div className="FormTray">
           <label>
@@ -153,7 +162,10 @@ const ModuleForm = ({ onSubmit, onCancel }) => {
         </div>
 
         <Action.Tray>
-          <Action.Submit showText onClick={handleSubmit} />
+          <Action.Submit
+            showText
+            onClick={() => openConfirm("Are You Sure You Want To Submit?")}
+          />
           <Action.Cancel showText buttonText="Cancel Form" onClick={onCancel} />
         </Action.Tray>
       </Spacer>

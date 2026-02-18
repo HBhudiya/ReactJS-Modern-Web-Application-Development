@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./Modal.scss";
 
-const Modal = ({ title, children }) => {
+export const Modal = ({ title, headerColor, children }) => {
   // Initialisation
   // State
   // Handlers
@@ -9,7 +9,7 @@ const Modal = ({ title, children }) => {
   return (
     <div className="ModalOverlay">
       <div className="ModalPane">
-        <header>
+        <header style={{ backgroundColor: headerColor }}>
           <p>{title}</p>
         </header>
         <main>{children}</main>

@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import useLoad from "../api/useLoad.js";
+import apiURL from "../api/apiURL.js";
+import API from "../api/API.js";
 import Spacer from "../UI/Spacer.jsx";
 import Action from "../UI/Actions.jsx";
 import ModuleForm from "../entity/module/ModuleForm.jsx";
@@ -7,42 +10,12 @@ import ModuleCard from "../entity/module/ModuleCard.jsx";
 
 const Modules = () => {
   // Initialisation
-  const apiURL = "https://softwarehub.uk/unibase/api";
   const modulesEndpoint = `${apiURL}/modules`;
   const postModuleEndpoint = `${apiURL}/modules`;
 
   // State
-  const [modules, setModules] = useState(null);
   const [showForm, setShowForm] = useState(false);
-
-  const apiGet = async (endpoint) => {
-    const response = await fetch(endpoint);
-    const result = await response.json();
-    setModules(result);
-  };
-
-  useEffect(() => {
-    apiGet(modulesEndpoint);
-  }, [modulesEndpoint]);
-
-  const apiPOST = async (endpoint, record) => {
-    // Build a request object
-    const request = {
-      method: "POST",
-      body: JSON.stringify(record),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    // Call the fetch
-    const response = await fetch(endpoint, request);
-    const result = await response.json();
-
-    return response.status >= 200 && response.status < 300
-      ? { isSuccess: true }
-      : { isSuccess: false, message: result.message };
-  };
+  const [modules, loadingMessage, loadModules] = useLoad(modulesEndpoint);
 
   // Handlers
   const handleAdd = () => {
@@ -54,10 +27,10 @@ const Modules = () => {
   };
 
   const handleSubmit = async (module) => {
-    const result = await apiPOST(postModuleEndpoint, module);
+    const result = await API.post(postModuleEndpoint, module);
     if (result.isSuccess) {
       setShowForm(false);
-      apiGet(modulesEndpoint);
+      loadModules(modulesEndpoint);
     } else alert(`Submission Unsuccessful: ${result.message}`);
   };
 
@@ -80,7 +53,7 @@ const Modules = () => {
         )}
 
         {!modules ? (
-          <p>Loading Records...</p>
+          <p>{loadingMessage}</p>
         ) : (
           <CardContainer>
             {modules.map((module) => (

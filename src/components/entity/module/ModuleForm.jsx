@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import useLoad from "../../api/useLoad.js";
+import apiURL from "../../api/apiURL.js";
+import API from "../../api/API.js";
 import Spacer from "../../UI/Spacer.jsx";
 import Action from "../../UI/Actions.jsx";
 import "./ModuleForm.scss";
@@ -35,28 +38,13 @@ const ModuleForm = ({ onSubmit, onCancel }) => {
     },
   };
 
-  const apiURL = "https://softwarehub.uk/unibase/api";
   const yearsEndpoint = `${apiURL}/years`;
   const staffEndpoint = `${apiURL}/users/staff`;
 
   // State
   const [module, setModule] = useState(initialModule);
-  const [years, setYears] = useState(null);
-  const [staff, setStaff] = useState(null);
-
-  const apiGet = async (endpoint, setState) => {
-    const response = await fetch(endpoint);
-    const result = await response.json();
-    setState(result);
-  };
-
-  useEffect(() => {
-    apiGet(yearsEndpoint, setYears);
-  }, [yearsEndpoint]);
-
-  useEffect(() => {
-    apiGet(staffEndpoint, setStaff);
-  }, [staffEndpoint]);
+  const [years, loadingYearsMessage] = useLoad(yearsEndpoint);
+  const [staff, loadingStaffMessage] = useLoad(staffEndpoint);
 
   // Handlers
   const handleChange = (event) => {
@@ -110,7 +98,7 @@ const ModuleForm = ({ onSubmit, onCancel }) => {
           <label>
             Module Year
             {!years ? (
-              <p>Loading Records...</p>
+              <p>{loadingYearsMessage}</p>
             ) : (
               <select
                 name="ModuleYearID"
@@ -132,7 +120,7 @@ const ModuleForm = ({ onSubmit, onCancel }) => {
           <label>
             Module Leader
             {!staff ? (
-              <p>Loading Records...</p>
+              <p>{loadingStaffMessage}</p>
             ) : (
               <select
                 name="ModuleLeaderID"

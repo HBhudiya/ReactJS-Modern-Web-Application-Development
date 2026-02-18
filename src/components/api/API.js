@@ -10,7 +10,7 @@ const callFetch = async (endpoint, method, record = null) => {
   const request = { method };
   if (record) {
     request.body = JSON.stringify(record);
-    request.headers = { "Content-Type": "appplication/json" };
+    request.headers = { "Content-Type": "application/json" };
   }
 
   // Call the fetch

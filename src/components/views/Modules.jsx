@@ -1,3 +1,4 @@
+import { useAuth } from "../auth/authContext.jsx";
 import useLoad from "../api/useLoad.js";
 import apiURL from "../api/apiURL.js";
 import API from "../api/API.js";
@@ -11,7 +12,11 @@ import ModuleCard from "../entity/module/ModuleCard.jsx";
 
 const Modules = () => {
   // Initialisation
-  const modulesEndpoint = `${apiURL}/modules`;
+  const { loggedInUser } = useAuth();
+  const modulesEndpoint =
+    loggedInUser.UserUsertypeID === 1
+      ? `${apiURL}/modules/leader/${loggedInUser.UserID}`
+      : `${apiURL}/modules/users/${loggedInUser.UserID}`;
   const postModuleEndpoint = `${apiURL}/modules`;
 
   // State

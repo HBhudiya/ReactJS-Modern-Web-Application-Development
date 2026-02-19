@@ -1,10 +1,9 @@
-import { useContext } from "react";
-import AuthContext from "../auth/authContext.js";
+import { useAuth } from "../auth/authContext.jsx";
 import "./Header.scss";
 
-function Header() {
+const Header = () => {
   // Initialisation
-  const loggedInUser = useContext(AuthContext);
+  const { loggedInUser } = useAuth();
 
   // State
   // Handlers
@@ -12,9 +11,11 @@ function Header() {
   return (
     <header>
       <h1>Basic React Demo</h1>
-      <p className="welcome">Welcome {loggedInUser.UserFirstname}</p>
+      {loggedInUser && (
+        <p className="welcome">Welcome {loggedInUser.UserFirstname}</p>
+      )}
     </header>
   );
-}
+};
 
 export default Header;
